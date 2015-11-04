@@ -29,6 +29,7 @@ files = ['README.md',
          'LICENSE',
          '.gitignore',
          'check-p4.py',
+         'registro.libpcap',
          '.git'
          ]
 
