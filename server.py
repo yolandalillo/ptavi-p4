@@ -13,19 +13,14 @@ class EchoHandler(socketserver.DatagramRequestHandler):
     """
 
     def handle(self):
-        # Escribe dirección y puerto del cliente (de tupla client_address)
         self.wfile.write(b"Hemos recibido tu peticion")
-        while 1:
-            # Leyendo línea a línea lo que nos envía el cliente
-            line = self.rfile.read()
-            print("El cliente nos manda " + line.decode('utf-8'))
-
-            # Si no hay más líneas salimos del bucle infinito
-            if not line:
-                break
+        for line in self.rfile:
+            print("El cliente nos manda ", line.decode('utf-8'))
 
 if __name__ == "__main__":
-    # Creamos servidor de eco y escuchamos
     serv = socketserver.UDPServer(('', 6001), EchoHandler)
     print("Lanzando servidor UDP de eco...")
-    serv.serve_forever()
+    try:
+        serv.serve_forever()
+    except KeyboardInterrupt:
+        print("Finalizado servidor")
