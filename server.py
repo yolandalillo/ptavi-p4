@@ -7,15 +7,13 @@ Clase (y programa principal) para un servidor de eco en UDP simple
 import socketserver
 import sys
 
-PORT = int(sys.argv[1]) #A la hora de ejecutar poner el puerto en el servidor que no me de fallo
+PORT = int(sys.argv[1])
 
-class EchoHandler(socketserver.DatagramRequestHandler):
-    """
-    Echo server class
-    """
+
 class SIPRegistrerHandler(socketserver.DatagramRequestHandler):
 
     dic = {}
+
     def handle(self):
         """
         handle method of the server class
@@ -31,11 +29,12 @@ class SIPRegistrerHandler(socketserver.DatagramRequestHandler):
                     self.dic[user] = self.client_address[0]
         print(self.dic)
 
+
 if __name__ == "__main__":
-    # Listens at localhost ('') port 6001 
+    # Listens at localhost ('') port 6001
     # and calls the EchoHandler class to manage the request
     serv = socketserver.UDPServer(('', PORT), SIPRegistrerHandler)
-    print("Lanzando servidor UDP de eco...")
+    print("Lanzando servidor UDP de SIP...")
     try:
         serv.serve_forever()
     except KeyboardInterrupt:
