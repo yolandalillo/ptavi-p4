@@ -19,6 +19,12 @@ class SIPRegistrerHandler(socketserver.DatagramRequestHandler):
         handle method of the server class
         (all requests will be handled by this method)
         """
+        datos = self.rfile.read().decode('utf-8')
+        print(datos)
+
+
+
+
         self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n")
         print(self.client_address)
         for line in self.rfile:
