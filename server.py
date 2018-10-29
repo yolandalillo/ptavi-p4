@@ -1,22 +1,18 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-"""
-Clase (y programa principal) para un servidor de SIP en UDP simple
-"""
+"""Clase (y programa principal) para un servidor de SIP en UDP simple."""
 
 import socketserver
 import sys
-import json
 import time
+import json
 
 
 class SIPRegistrerHandler(socketserver.DatagramRequestHandler):
-    """
-        SIP server class
-    """
+    """SIP server class."""
 
     def handle(self):
-
+        """Método handle de la clase."""
         while 1:
             line = self.rfile.read()  # Leyendo lo que envia el cliente.
             line_client = line.decode('utf-8').split()
@@ -28,6 +24,7 @@ class SIPRegistrerHandler(socketserver.DatagramRequestHandler):
             if line_client[0] == 'REGISTER':
                 # Guardamos dirección e IP en nuestro diccionario.
                 direccion = line_client[1].split(':')
+                usuario = direccion[1]
                 expires = int(line_client[4])
                 time_actual = int(time.time())
                 time_actual_str = time.strftime('%Y-%m-%d %H:%M:%S',
@@ -35,27 +32,26 @@ class SIPRegistrerHandler(socketserver.DatagramRequestHandler):
                 time_exp = int(expires + time_actual)
                 time_exp_string = time.strftime('%Y-%m-%d %H:%M:%S',
                                                 time.gmtime(time_exp))
-                lista = []
-                for cliente in dic:
 
-                    if time_actual_str >= dic[cliente][1]:
-                        lista.append(cliente)
-
-                dic[direccion[1]] = self.client_address[0]
+                self.lista = []
+                dic[usuario] = [self.client_address[0], time_exp_string]
+                self.lista.append(dic)
                 print("SIP/2.0 200 OK\r\n")
                 self.wfile.write(b"SIP/2.0 200 OK" + b'\r\n\r\n')
                 if line_client[4] == '0':
-                    print("Borramos el diccionario")
-                    del dic[direccion[1]]
-                    print(dic)
+                    print("Lo borramos del diccionario")
+                    del dic[usuario]
+                    print(self.lista)
                 else:
-                    print(dic, time_exp_string)
-            self.register2json()
+                    print(self.lista)
+
+        self.register2json()
 
     def register2json(self):
+        """Método json2 registered."""
         with open('registered.json', 'w') as archivo_json:
-            json.dump(dic, archivo_json, sort_keys=True,
-                      indent=4, separators=(',', ': '))
+            json.dump(self.lista, archivo_json, sort_keys=True,
+                      indent=4, separators=(',', ':'))
 
 
 if __name__ == "__main__":
