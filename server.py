@@ -11,7 +11,24 @@ import json
 class SIPRegistrerHandler(socketserver.DatagramRequestHandler):
     """SIP server class."""
 
+    def json2register(self):
+        """Método JSON."""
+        try:
+            with open('registered.json', 'r') as jsonfile:
+                self.dic = json.load(jsonfile)
+        except (FileNotFoundError):
+            self.dic = {}
+
+    def register2json(self):
+        """Método json2 registered."""
+        with open('registered.json', 'w') as archivo_json:
+            json.dump(self.lista, archivo_json, sort_keys=True,
+                      indent=4, separators=(',', ':'))
+
     def handle(self):
+        self.json2register()
+        print("Anteriormente teniamos", self.dic,  '\r\n')
+
         """Método handle de la clase."""
         while 1:
             line = self.rfile.read()  # Leyendo lo que envia el cliente.
@@ -46,12 +63,6 @@ class SIPRegistrerHandler(socketserver.DatagramRequestHandler):
                     print(self.lista)
 
         self.register2json()
-
-    def register2json(self):
-        """Método json2 registered."""
-        with open('registered.json', 'w') as archivo_json:
-            json.dump(self.lista, archivo_json, sort_keys=True,
-                      indent=4, separators=(',', ':'))
 
 
 if __name__ == "__main__":
